@@ -315,8 +315,12 @@ $this->registerLinkTag([
                                 'url' => ['default/selyear'],
                             ],
                             [
-                                'label' => Html::icon('inbox').' รายการยังไม่ส่งผลตรวจ',
+                                'label' => Html::icon('search').' ค้นหา',
                                 'url' => ['default/'],
+                            ],
+                            [
+                                'label' => Html::icon('inbox').' รายการยังไม่ส่งผลตรวจ',
+                                'url' => ['default/checklist'],
                                 'count' => '\backend\modules\iac\models\DefaultCheckSearch',
                             ],
                             [

@@ -41,12 +41,13 @@ class InvtCheckIndexSearch extends InvtCheck
         
 	 */
     public $searchstring;
+    public $checkyear;
     public function rules()
     {
         return [
             [['id', 'cc_id', 'invt_id', 'old_stat', 'stat_id', 'old_loc', 'loc_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'status'], 'integer'],
             [['old_occupy','occupy_by', 'note',
-                'invtName', 'locName','statName', 'searchstring' ], 'safe'],
+                'invtName', 'locName','statName', 'searchstring', 'checkyear' ], 'safe'],
         ];
     }
 

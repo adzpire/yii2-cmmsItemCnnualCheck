@@ -55,14 +55,34 @@ class DefaultController extends Controller
         }
         Yii::$app->view->title = Yii::t('app', 'รายการตรวจประจำปี ').$commmodel->year.' - '.$this->checkperson->fullname;
 
-        $invtloc = InvtCheck::find()
-            ->select(['loc_id','count(id) AS invttotal', 'SUM(note) AS notetext'])
-            ->andWhere([
-                'cc_id'=>$commmodel->id,
-                'status'=> 0,
-            ])
-            ->groupBy(['loc_id'])
-            ->all();
+        $searchModel = new InvtCheckIndexSearch(['checkyear' => $commmodel->year]);
+        if(!Yii::$app->request->queryParams){
+            $param['InvtCheckIndexSearch']['status'] = '99';
+            // พี่บ่าวลองเปลี่ยนดู มันได้ แต่มันโผล่ abcd ที่ textbox ลองเปลี่ยน searching เป็นฟิลด์อื่นที่ไม่เกี่ยวข้องกับการค้นหาหน้าเว็บดู
+        }else{
+            $param = Yii::$app->request->queryParams;
+        }
+        //print_r(Yii::$app->request->queryParams);exit();
+        $dataProvider = $searchModel->search($param);
+
+        return $this->render('index', [
+            'commmodel' => $commmodel,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionChecklist()
+    {
+        if(isset($this->committee)){
+            $commmodel = $this->findCommmodel($this->committee);
+        }else{
+            AdzpireComponent::dangalert('addflsh', 'ต้องเลือกปีที่เป็นกรรมการก่อน');
+            return $this->redirect(['selyear']);
+        }
+        Yii::$app->view->title = Yii::t('app', 'รายการตรวจประจำปี ').$commmodel->year.' - '.$this->checkperson->fullname;
+
+        $invtloc = InvtCheck::getLocgroupcheck($this->committee);
 
         $searchModel = new InvtCheckIndexSearch;
         if(!Yii::$app->request->queryParams){
@@ -74,7 +94,7 @@ class DefaultController extends Controller
         //print_r(Yii::$app->request->queryParams);exit();
         $dataProvider = $searchModel->search($param);
 
-        return $this->render('index', [
+        return $this->render('checklist', [
             'commmodel' => $commmodel,
             'invtloc' => $invtloc,
             'searchModel' => $searchModel,
@@ -93,14 +113,7 @@ class DefaultController extends Controller
 
         Yii::$app->view->title = Yii::t('app', 'รายการที่ตรวจแล้วปี ').$commmodel->year.' - '.$this->checkperson->fullname;
 
-        $invtlocchecked = InvtCheck::find()
-            ->select(['loc_id','count(id) AS invttotal', 'SUM(note) AS notetext'])
-            ->andWhere([
-                'cc_id'=>$commmodel->id,
-                'status'=> 1,
-            ])
-            ->groupBy(['loc_id'])
-            ->all();
+        $invtlocchecked = InvtCheck::getLocgroupchecked($commmodel->id);
 
         return $this->render('checkedlist', [
             'commmodel' => $commmodel,

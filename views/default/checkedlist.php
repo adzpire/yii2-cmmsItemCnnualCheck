@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </span>
         </div>
         <div class="panel-body">
-            <?php echo $ddd;
+            <?php
             if(isset($commmodel)) {
                 echo $this->render('_commiteedetail', ['model' => $commmodel]);
             }else{
@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     foreach($invtlocchecked as $key => $value){
                         ?>
                         <div class="col-sm-6 col-md-3 _fixhigh text-center">
-                            <div class="thumbnail tn-clickable" style="background: <?php echo $value->notetext === NULL ? '#f0e3d8' : '#dff0d8'; ?>" data-url="<?php echo Url::to(['default/checked','id'=>$commmodel->id,'lid'=>$value->loc_id]); ?>" >
+                            <div class="thumbnail tn-clickable" data-url="<?php echo Url::to(['default/checked','id'=>$commmodel->id,'lid'=>$value->loc_id]); ?>" >
                                 <h4><?php echo $value->loc->loc_name; ?></h4>
                                 <p>จำนวน <span class="badge"><?php echo $value->invttotal; ?></span> รายการ</p>
                             </div>

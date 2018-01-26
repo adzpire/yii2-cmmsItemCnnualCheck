@@ -168,6 +168,32 @@ $query->joinWith(['cc', 'invtChecks', 'invt', 'loc', 'createdBy', 'updatedBy', ]
         return $arr;
     }
 
+    public static function getLocgroupcheck($id)
+    {
+        $invtloc = self::find()
+            ->select(['loc_id','count(id) AS invttotal'])
+            ->andWhere([
+                'cc_id'=> $id,
+                'status'=> 0,
+            ])
+            ->groupBy(['loc_id'])
+            ->all();
+        return $invtloc;
+    }
+
+    public static function getLocgroupchecked($id)
+    {
+        $invtlocchecked = InvtCheck::find()
+            ->select(['loc_id','count(id) AS invttotal'])
+            ->andWhere([
+                'cc_id'=> $id,
+                'status'=> 1,
+            ])
+            ->groupBy(['loc_id'])
+            ->all();
+        return $invtlocchecked;
+    }
+
     public static function getTotalperuser($id)
     {
         $count = self::find()
