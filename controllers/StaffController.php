@@ -40,11 +40,11 @@ class StaffController extends Controller
     public $checkyear;
     public $moduletitle;
     public $checkperson;
-
+    public $session;
     public function beforeAction($action){
         $this->checkperson = Person::findOne([Yii::$app->user->id]);
-        $cookies = Yii::$app->request->cookies;
-        $this->checkyear = $cookies->getValue('staffccyear');
+        $this->session = Yii::$app->session;
+        $this->checkyear = $this->session->get('staffccyear');
         $this->moduletitle = Yii::t('app', Yii::$app->controller->module->params['title']);
         return parent::beforeAction($action);
     }
@@ -139,12 +139,7 @@ class StaffController extends Controller
 
         if (Yii::$app->request->post()) {
             $post = Yii::$app->request->post();
-            $cookie = \Yii::$app->response->cookies;
-            $cookie->add(new \yii\web\Cookie([
-                'name' => 'staffccyear',
-                'value' => $post['InvtCheckcommit']['id'],
-                'expire' => time() + (60*60*24*30),
-            ]));
+            $this->session->set('staffccyear', $post['InvtCheckcommit']['id']);
             AdzpireComponent::succalert('addflsh', 'เลือกปีที่ตรวจสอบแล้ว');
             return $this->redirect(['index']);
         }
@@ -154,12 +149,6 @@ class StaffController extends Controller
             'list' => $list,
             'model' => $model,
         ]);
-    }
-
-    public function actionRemovecookie()
-    {
-        $cookies = Yii::$app->response->cookies;
-        $cookies->remove('staffccyear');
     }
 
     public function actionCommitteelist()

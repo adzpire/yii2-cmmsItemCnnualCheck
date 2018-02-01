@@ -68,9 +68,9 @@ class DefaultCheckSearch extends InvtCheck
      */
     public function search($params)
     {
-        $cookies = Yii::$app->request->cookies;
-        $committee = $cookies->getValue('ccyear');
 
+        $session = Yii::$app->session;
+        $committee = $session->get('userccyear');
         $query = InvtCheck::find();
         $query->joinWith(['invtChecks']);
         if(isset($committee)){
@@ -85,7 +85,9 @@ class DefaultCheckSearch extends InvtCheck
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => false,
+            'pagination' => [
+                'pageSize' => 200,
+            ],
             'sort' => false,
         ]);
 

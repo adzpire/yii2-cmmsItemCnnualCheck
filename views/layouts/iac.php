@@ -5,6 +5,7 @@
 
 use yii\bootstrap\Html;
 use yii\helpers\Url;
+use yii\web\View;
 //use yii\bootstrap\Nav;
 use backend\components\Monav;
 use yii\bootstrap\NavBar;
@@ -134,6 +135,51 @@ $this->registerJs($js);
         .btn-link{
             padding: 15px;
         }
+        
+        
+/*
+ * Off Canvas
+ * --------------------------------------------------
+ */
+@media screen and (max-width: 767px) {
+  .row-offcanvas {
+    position: relative;
+    -webkit-transition: all .25s ease-out;
+         -o-transition: all .25s ease-out;
+            transition: all .25s ease-out;
+  }
+
+  .row-offcanvas-right {
+    right: 0;
+  }
+
+  .row-offcanvas-left {
+    left: 0;
+  }
+
+  .row-offcanvas-right
+  .sidebar-offcanvas {
+    right: -50%; /* 6 columns */
+  }
+
+  .row-offcanvas-left
+  .sidebar-offcanvas {
+    left: -50%; /* 6 columns */
+  }
+
+  .row-offcanvas-right.active {
+    right: 50%; /* 6 columns */
+  }
+
+  .row-offcanvas-left.active {
+    left: 50%; /* 6 columns */
+  }
+
+  .sidebar-offcanvas {
+    position: absolute;
+    top: 0;
+    width: 50%; /* 6 columns */
+  }
      ");
     ?>
 </head>
@@ -241,9 +287,10 @@ $this->registerLinkTag([
     NavBar::end();
     ?>
     <div class="container-fluid">
+        <div class="row row-offcanvas row-offcanvas-left">
         <?php
         $cookies = Yii::$app->request->cookies;
-
+        $session = Yii::$app->session;
         if (($cookie = $cookies->get($modul->params['modulecookies'])) !== null) {
             if($cookie->value != $modul->params['ModuleVers']){
                 $delcookies = Yii::$app->response->cookies;
@@ -287,7 +334,7 @@ $this->registerLinkTag([
             $extendedpage = ['checking', 'check', 'checked','unchange', 'change'];
         ?>
         <div class='col-md-3' style='<?php echo ArrayHelper::isIn($checkaction, $extendedpage) ? 'display: none;' : false ?>' >
-            <!-- -->
+            <!-- sidebar-offcanvas' id="sidebar"-->
             <?php if (\Yii::$app->user->can('Staff')) { ?>
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -297,8 +344,10 @@ $this->registerLinkTag([
                     <p><strong>ข้อมูลผู้ใช้ : </strong> <?php echo Yii::$app->user->identity->profile->fullname; ?></p>
                     <p><strong>ปีที่เป็นกรรมการตรวจ :</strong>
                         <?php
-                            if (($cookie = $cookies->get('ccyear')) !== null) {
-                                echo '<span class="text-success">'.$cookies->get('checkyear').'</span>';
+
+                            //$this->committee = $session->get('userccyear');
+                            if ($session->get('userccyear') !== null) {
+                                echo '<span class="text-success">'.$session->get('checkyear').'</span>';
                             }else{
                                 echo '<span class="text-danger">ยังไม่เลือก</span>';
                             }
@@ -347,8 +396,8 @@ $this->registerLinkTag([
                 <div class="panel-body">
                     <p><strong>ปีที่ตรวจสอบ :</strong>
                         <?php
-                        if (($cookie = $cookies->get('staffccyear')) !== null) {
-                            echo '<span class="text-success">'.$cookie.'</span>';
+                        if ($session->get('staffccyear') !== null) {
+                            echo '<span class="text-success">'.$session->get('staffccyear').'</span>';
                         }else{
                             echo '<span class="text-danger">ยังไม่เลือก</span>';
                         }
@@ -362,6 +411,10 @@ $this->registerLinkTag([
                         'encodeLabels' => false,
                         'items' => [
                             [
+                                'label' => Html::icon('info-sign').' หน้าแรก',
+                                'url' => ['staff/'],
+                            ],
+                            [
                                 'label' => Html::icon('calendar').' เลือกปีที่ตรวจสอบ',
                                 'url' => ['staff/selyear'],
                             ],
@@ -373,7 +426,7 @@ $this->registerLinkTag([
                             ],
                             [
                                 'label' => Html::icon('saved').' รับทราบรายการตรวจ',
-                                'url' => ['staff/'],
+                                'url' => ['staff/approvelist'],
                                 //'count' => '\backend\modules\tc\models\TeacherContributionSearch',
                             ],
                             [
@@ -461,7 +514,7 @@ echo Nav::widget([
         <div class="<?php echo ArrayHelper::isIn($checkaction, $extendedpage) ? 'col-md-12' : 'col-md-9' ?>">
             <?= $content ?>
         </div>
-
+        </div>
         <?php /*if(isset($this->blocks['block1'])){
 			$this->blocks['block1'];
 		 }else{
@@ -480,6 +533,16 @@ echo Nav::widget([
 </footer>
 
 <?php $this->endBody() ?>
+<?php
+$this->registerJs("
+$(document).ready(function () {
+  $('[data-toggle=\"offcanvas\"]').click(function () {
+    $('.row-offcanvas').toggleClass('active');
+//alert('dd');
+  });
+});
+", View::POS_END);
+?>
 </body>
 </html>
 <?php $this->endPage() ?>

@@ -11,7 +11,7 @@ use yii\bootstrap\ActiveForm;
 <div class="invt-main-search">
 
     <?php $form = ActiveForm::begin([
-        'action' => ['index'],
+        'action' => ['approvelist'],
         'method' => 'get',
         'options' => ['data-pjax' => true],
     ]); ?>

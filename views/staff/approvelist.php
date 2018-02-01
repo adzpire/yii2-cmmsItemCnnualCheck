@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="panel panel-info">
         <div class="panel-heading">
             <span class="panel-title">
-                <?php echo Html::icon('search') ?> ค้นหา
+                <?php echo Html::icon('search') ?> ค้นหาปี <?php echo $searchModel->year; ?>
             </span>
         </div>
         <div class="panel-body">

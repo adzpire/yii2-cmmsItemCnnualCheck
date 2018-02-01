@@ -34,10 +34,11 @@ class DefaultController extends Controller
     public $checkperson;
     public $moduletitle;
     public $committee;
+    public $session;
     public function beforeAction($action){
         $this->checkperson = Person::findOne([Yii::$app->user->id]);
-        $cookies = Yii::$app->request->cookies;
-        $this->committee = $cookies->getValue('ccyear');
+        $this->session = Yii::$app->session;
+        $this->committee = $this->session->get('userccyear');
         $this->moduletitle = Yii::t('app', Yii::$app->controller->module->params['title']);
         return parent::beforeAction($action);
     }
@@ -142,17 +143,8 @@ class DefaultController extends Controller
 
         if (Yii::$app->request->post()) {
             $post = Yii::$app->request->post();
-            $cookie = \Yii::$app->response->cookies;
-            $cookie->add(new \yii\web\Cookie([
-                'name' => 'ccyear',
-                'value' => $post['InvtCheckcommit']['id'],
-                'expire' => time() + (60*60*24*30),
-            ]));
-            $cookie->add(new \yii\web\Cookie([
-                'name' => 'checkyear',
-                'value' => $this->findCommmodel($post['InvtCheckcommit']['id'])->year,
-                'expire' => time() + (60*60*24*30),
-            ]));
+            $this->session->set('userccyear', $post['InvtCheckcommit']['id']);
+            $this->session->set('checkyear', $this->findCommmodel($post['InvtCheckcommit']['id'])->year);
             AdzpireComponent::succalert('addflsh', 'เลือกปีที่เป็นผู้ตรวจสอบแล้ว');
             return $this->redirect(['index']);/**/
             /*if($model->save()){
@@ -240,7 +232,10 @@ class DefaultController extends Controller
         if (Yii::$app->request->post('InvtCheck')) {
             $post = Yii::$app->request->post('InvtCheck');
             $selarray = Yii::$app->request->post('selection');
-
+//            print_r($post);
+//            echo '<br>cxcxc';
+//            print_r($selarray);
+//            exit();
             foreach($selarray as $key => $value){
 
                 $mdlcheck = $this->findModel($value);
@@ -421,9 +416,8 @@ class DefaultController extends Controller
     public function actionLogout()
     {
         Yii::$app->user->logout();
-        $cookies = Yii::$app->response->cookies;
-        $cookies->remove('ccyear');
-        $cookies->remove('staffccyear');
+        $this->session->remove('userccyear');
+        $this->session->remove('staffccyear');
         return $this->goHome();
     }
 

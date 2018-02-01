@@ -69,9 +69,13 @@ class InvtCheckIndexSearch extends InvtCheck
      */
     public function search($params)
     {
+        $session = Yii::$app->session;
+        $year = $session->get('staffccyear');
+        //echo $year;
         $query = InvtCheck::find();
         $query->joinWith(['invt', 'invtChecks', 'loc', 'stat']);
         // add conditions that should always apply here
+        $query->andWhere(['invt_checkcommit.year'=> $year ]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -111,12 +115,12 @@ class InvtCheckIndexSearch extends InvtCheck
             'updated_by' => $this->updated_by,
             'status' => $this->status,
         ]);
-
-        $query->orFilterWhere(['like', 'invt_main.invt_name', $this->searchstring])
-            ->orFilterWhere(['like', 'invt_main.invt_code', $this->searchstring])
-            ->orFilterWhere(['like', 'invt_main.invt_brand', $this->searchstring])
-            ->orFilterWhere(['like', 'invt_main.invt_detail', $this->searchstring]);
-
+        $query->andWhere(' (invt_main.invt_name LIKE \'%'.$this->searchstring.'%\' OR invt_main.invt_code LIKE \'%'.$this->searchstring.'%\' OR invt_main.invt_brand LIKE \'%'.$this->searchstring.'%\' OR invt_main.invt_detail LIKE \'%'.$this->searchstring.'%\') ');
+//        $query->orFilterWhere(['like', 'invt_main.invt_name', $this->searchstring])
+//            ->orFilterWhere(['like', 'invt_main.invt_code', $this->searchstring])
+//            ->orFilterWhere(['like', 'invt_main.invt_brand', $this->searchstring])
+//            ->orFilterWhere(['like', 'invt_main.invt_detail', $this->searchstring]);
+//        echo $query->createCommand()->getRawSql();exit();
         return $dataProvider;
     }
 }

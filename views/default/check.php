@@ -222,6 +222,8 @@ $(document).on('click', '#submitButton', function (e) {
     if(HotId.length == 0){
         e.preventDefault();
         alert('ไม่มีการเลือก');
+    }else{
+        alert(HotId);
     }
 });
 ", View::POS_READY);
